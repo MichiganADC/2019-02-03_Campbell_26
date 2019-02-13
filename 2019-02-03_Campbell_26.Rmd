@@ -1,0 +1,376 @@
+---
+title: "2019-02-03_Campbell_26"
+author: "Nicolas May"
+date: "2/11/2019"
+output: 
+  html_document:
+    theme: sandstone
+    highlight: zenburn
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load Requirements
+
+### Load libraries
+
+```{r}
+library(dplyr)
+library(stringr)
+```
+
+### Load useful constants / functions
+
+```{r}
+source("~/Desktop/config.R")
+rm(BOX_CLIENT_ID); rm(BOX_CLIENT_SECRET); rm(BOX_REDIRECT_URI)
+source("~/Desktop/helpers.R")
+
+GET_API_DATA <- TRUE
+```
+
+
+## Get Data
+
+### Define data fields & forms
+
+#### UDS 3
+
+```{r}
+## FIELDS
+
+# header
+fields_u3_raw_vst <-
+  c(
+    "ptid"
+    , "form_date"
+  )
+# ivp_c2
+fields_u3_raw_c2 <-
+  c(
+    "mocatots"
+    , "trailb_c2"
+    , "trailbrr_c2"
+    , "trailbli_c2"
+    , "trailb_c2z"
+  )
+# ivp_d1
+fields_u3_raw_d1 <-
+  c(
+    "normcog"    # NL
+    , "mciamem"  # MCI
+    , "mciaplus" # MCI
+    , "mcinon1"  # MCI
+    , "mcinon2"  # MCI
+    , "impnomci" # Impaired not MCI
+    , "alzdis"   # AD etio
+    , "alzdisif"
+    , "lbdis"    # LBD etio
+    , "lbdif"
+    , "msa"      # MSA etio
+    , "msaif"
+    , "psp"      # PSP etio
+    , "pspif"
+    , "ftldmo"   # FTLD motor etio
+    , "ftldmoif"
+    , "ftldnos"  # FTLD NOS etio
+    , "ftldnoif"
+  )
+
+# combine header & Form C2 fields, prefixing C2 with "fu_" and "tele_"
+fields_u3_raw <-
+  c(
+    fields_u3_raw_vst,
+    fields_u3_raw_c2,
+    paste0("fu_", fields_u3_raw_c2),
+    paste0("tele_", fields_u3_raw_c2),
+    fields_u3_raw_d1,
+    paste0("fu_", fields_u3_raw_d1),
+    paste0("tele_", fields_u3_raw_d1)
+  )
+
+fields_u3 <- fields_u3_raw %>% paste(collapse = ",")
+
+
+## FORMS
+
+forms_u3_raw <- 
+  c(
+    # Lichtenberg Financial Decision Making Screening Scale
+    "lfdss_for_professionals"
+  )
+
+forms_u3 <- forms_u3_raw %>% paste(collapse = ",")
+```
+
+#### MiNDSet Registry
+
+```{r}
+fields_ms_raw <-
+  c(
+    "subject_id"
+    , "exam_date"
+    , "birth_date"
+    , "race_value" # 1 Wht, 2 Blk, 3 Asn, 4 Hsp, 5 Oth, 6 Unk
+    , "sex_value"  # 1 M, 2 F
+    , "ed_level"   
+    , "marital_status" # 1 Mrd, 2 Wdw, 3 Dvc, 4 Sep, 5 Nvr, 6 Sng, 7 Oth
+  )
+
+fields_ms <- fields_ms_raw %>% paste(collapse = ",")
+```
+
+### Retrieve data via REDCap API
+
+#### UDS 3
+
+```{r}
+if (GET_API_DATA) {
+  json_u3 <- rc_api_get(uri =    REDCAP_API_URI,
+                        token =  REDCAP_API_TOKEN_UDS3n,
+                        fields = fields_u3,
+                        forms  = forms_u3)
+}
+
+df_u3 <- jsonlite::fromJSON(json_u3) %>% na_if("")
+```
+
+#### MiNDSet Registry
+
+```{r}
+if (GET_API_DATA) {
+  json_ms <- rc_api_get(uri =    REDCAP_API_URI,
+                        token =  REDCAP_API_TOKEN_MINDSET,
+                        fields = fields_ms)
+}
+
+df_ms <- jsonlite::fromJSON(json_ms) %>% na_if("")
+```
+
+### Write raw data to csv
+
+```{r}
+data.table::fwrite(df_u3, "df_u3.csv", na = "")
+data.table::fwrite(df_ms, "df_ms.csv", na = "")
+```
+
+
+## Process Data
+
+### Clean data
+
+#### UDS 3
+
+Clean out DDE entry records (`--1`, `--2`).
+```{r}
+df_u3_cln <- df_u3 %>% 
+  filter(str_detect(ptid, "^UM\\d{8}$"))
+```
+
+Clean out records with missing `form_date`s.
+```{r}
+df_u3_cln <- df_u3_cln %>% 
+  filter(!is.na(form_date))
+```
+
+#### MiNDSet Registry
+
+Get only UMMAP IDs.
+```{r}
+df_ms_cln <- df_ms %>% 
+  filter(str_detect(subject_id, "^UM\\d{8}$"))
+```
+
+Clean out records with missing `exam_date`s.
+```{r}
+df_ms_cln <- df_ms_cln %>% 
+  filter(!is.na(exam_date))
+```
+
+### Mutate data
+
+#### UDS 3
+
+Collapse initial visit / follow-up visit / telephone visit fields.
+```{r}
+df_u3_cln_mut <- collapse_ift_cols(df_u3_cln)
+```
+
+Guess data types.
+```{r}
+df_u3_cln_mut <- suppressMessages( readr::type_convert(df_u3_cln_mut) )
+df_u3_cln_mut_cls_lis <- purrr::map(df_u3_cln_mut, class)
+```
+
+Simplify diagnosis and etiology fields.
+```{r}
+df_u3_cln_mut <- df_u3_cln_mut %>% 
+  mutate(uds_dx_der = case_when(
+    ftldnos  == 1 & ftldnoif == 1 ~ "FTLD",
+    ftldmo   == 1 & ftldmoif == 1 ~ "FTLD",
+    psp      == 1 & pspif    == 1 ~ "PSP",
+    msa      == 1 & msaif    == 1 ~ "MSA",
+    lbdis    == 1 & lbdif    == 1 ~ "LBD",
+    alzdis   == 1 & alzdisif == 1 ~ "AD",
+    impnomci == 1 ~ "Impaired no MCI",
+    mcinon2  == 1 ~ "MCI",
+    mcinon1  == 1 ~ "MCI",
+    mciaplus == 1 ~ "MCI",
+    mciamem  == 1 ~ "MCI",
+    normcog  == 1 ~ "NL",
+    TRUE ~ NA_character_
+  ))
+```
+
+Generate visit numbers.
+```{r}
+df_u3_cln_mut <- calculate_visit_num(df_u3_cln_mut,
+                                     id = ptid,
+                                     date_field = form_date)
+```
+
+#### MiNDSet Registry
+
+Coerce data types.
+```{r}
+# purrr::map(df_ms_cln, class)
+df_ms_cln_mut <- df_ms_cln %>% 
+  mutate(race_value = as.integer(race_value),
+         sex_value  = as.integer(sex_value),
+         ed_level   = as.integer(ed_level),
+         marital_status = as.integer(marital_status),
+         exam_date  = as.Date(exam_date),
+         birth_date = as.Date(birth_date))
+# purrr::map(df_ms_cln_mut, class)
+```
+
+Add age.
+```{r}
+df_ms_cln_mut <- calculate_age(df_ms_cln_mut,
+                               birth_date = birth_date,
+                               age_date = exam_date)
+```
+
+
+### Filter data
+
+#### UDS 3
+
+Get only most recent visits.
+```{r}
+df_u3_cln_mut_flt <- get_visit_n(df_u3_cln_mut,
+                                 id_field = ptid,
+                                 date_field = form_date,
+                                 n = -Inf) # -Inf => earliest visit
+```
+
+
+## Join Data
+
+### Left join: UDS 3 + MiNDSet Registry
+
+Get rid of `redcap_event_name` fields.
+```{r}
+df_u3_cln_mut_flt <- df_u3_cln_mut_flt %>% 
+  select(-redcap_event_name)
+df_ms_cln_mut <- df_ms_cln_mut %>% 
+  select(-redcap_event_name)
+```
+
+Perform left outer join.
+```{r}
+df_u3_ms <-
+  FuzzyDateJoin::outer_left(x = df_u3_cln_mut_flt,
+                            y = df_ms_cln_mut,
+                            x_id_col = "ptid", y_id_col = "subject_id",
+                            x_date_col = "form_date", y_date_col = "exam_date",
+                            x_intvl_less = 120L, x_intvl_more = 120L,
+                            keep_y_id = TRUE)
+```
+
+Reorder fields.
+```{r}
+# names(df_u3_ms)
+df_u3_ms <- df_u3_ms %>%
+  dplyr::select(
+    -birth_date,
+    -normcog, 
+    -mciamem, -mciaplus,
+    -mcinon1, -mcinon2,
+    -impnomci,
+    -alzdis, -alzdisif,
+    -lbdis, -lbdif,
+    -msa, -msaif,
+    -psp, -pspif,
+    -ftldmo, -ftldmoif,
+    -ftldnos, -ftldnoif
+  ) %>% 
+  dplyr::select(ptid, form_date, visit_num, 
+                uds_dx_der, uds_dx_date = exam_date,
+                age_years, age_exact, age_units,
+                race_value, sex_value, ed_level, marital_status,
+                everything())
+```
+
+
+## Write Data
+
+```{r}
+readr::write_csv(df_u3_ms, "df_u3_ms.csv", na = "")
+```
+
+
+## Build Data Dictionaries
+
+### UDS 3
+```{r}
+names_df_u3_ms <- names(df_u3_ms)
+names_df_u3_ms <- str_replace_all(names_df_u3_ms, "___\\d{1,2}$", "")
+
+json_data_dict_u3 <- RCurl::postForm(
+  uri          = REDCAP_API_URI,
+  token        = REDCAP_API_TOKEN_UDS3n,
+  content      = 'metadata',
+  format       = 'json',
+  returnFormat = 'json'
+)
+df_data_dict_u3 <- jsonlite::fromJSON(json_data_dict_u3)
+
+df_data_dict_u3_flt <- df_data_dict_u3 %>% 
+  filter(field_name %in% names_df_u3_ms)
+```
+
+### MiNDSet Registry
+```{r}
+# names_df_u3_ms <- names(df_u3_ms)
+
+json_data_dict_ms <- RCurl::postForm(
+  uri          = REDCAP_API_URI,
+  token        = REDCAP_API_TOKEN_MINDSET,
+  content      = 'metadata',
+  format       = 'json',
+  returnFormat = 'json'
+)
+df_data_dict_ms <- jsonlite::fromJSON(json_data_dict_ms)
+
+df_data_dict_ms_flt <- df_data_dict_ms %>% 
+  filter(field_name %in% names_df_u3_ms)
+```
+
+## Write Data Dictionaries
+
+```{r}
+readr::write_csv(df_data_dict_u3_flt, "DataDictionary_UDS3.csv", na = "")
+readr::write_csv(df_data_dict_ms_flt, "DataDictionary_MiNDSet.csv", na = "")
+```
+
+
+
+
+
+
