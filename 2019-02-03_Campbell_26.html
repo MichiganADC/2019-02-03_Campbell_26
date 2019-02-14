@@ -431,8 +431,10 @@ fields_u3 &lt;-<span class="st"> </span>fields_u3_raw <span class="op">%&gt;%</s
 
 forms_u3_raw &lt;-<span class="st"> </span>
 <span class="st">  </span><span class="kw">c</span>(
+    <span class="co"># Lichtenberg Financial Decision Making Self Efficacy Form</span>
+    <span class="st">&quot;financial_decision_making_self_efficacy_form&quot;</span>
     <span class="co"># Lichtenberg Financial Decision Making Screening Scale</span>
-    <span class="st">&quot;lfdss_for_professionals&quot;</span>
+    , <span class="st">&quot;lfdss_for_professionals&quot;</span>
   )
 
 forms_u3 &lt;-<span class="st"> </span>forms_u3_raw <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;,&quot;</span>)</code></pre></div>
@@ -536,6 +538,384 @@ df_u3_cln_mut_cls_lis &lt;-<span class="st"> </span>purrr<span class="op">::</sp
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span><span class="kw">calculate_visit_num</span>(df_u3_cln_mut,
                                      <span class="dt">id =</span> ptid,
                                      <span class="dt">date_field =</span> form_date)</code></pre></div>
+<p>Find LFDSS items with multiple responses; then filter out.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># names(df_u3_cln_mut)[</span>
+<span class="co">#   str_detect(string = names(df_u3_cln_mut), pattern = &quot;lfdss_&quot;)</span>
+<span class="co">#   ]</span>
+<span class="co"># names(df_u3_cln_mut)[</span>
+<span class="co">#   str_detect(string = names(df_u3_cln_mut), pattern = &quot;worker_&quot;)</span>
+<span class="co">#   ]</span>
+
+<span class="kw">nrow</span>(df_u3_cln_mut)</code></pre></div>
+<pre><code>## [1] 460</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rowwise</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_financial_decision_1_sum =</span> 
+           <span class="kw">sum</span>(lfdss_financial_decision_1___<span class="dv">1</span>,
+               lfdss_financial_decision_1___<span class="dv">2</span>,
+               lfdss_financial_decision_1___<span class="dv">3</span>,
+               lfdss_financial_decision_1___<span class="dv">4</span>,
+               lfdss_financial_decision_1___<span class="dv">5</span>,
+               lfdss_financial_decision_1___<span class="dv">6</span>,
+               lfdss_financial_decision_1___<span class="dv">7</span>,
+               lfdss_financial_decision_1___<span class="dv">8</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_whose_idea_2_sum =</span> 
+           <span class="kw">sum</span>(lfdss_whose_idea_2___<span class="dv">0</span>,
+               lfdss_whose_idea_2___<span class="dv">1</span>,
+               lfdss_whose_idea_2___<span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_purpose_3_sum =</span> 
+           <span class="kw">sum</span>(lfdss_purpose_3___<span class="dv">1</span>,
+               lfdss_purpose_3___<span class="dv">2</span>, 
+               lfdss_purpose_3___<span class="dv">3</span>,
+               lfdss_purpose_3___<span class="dv">4</span>,
+               lfdss_purpose_3___<span class="dv">5</span>,
+               lfdss_purpose_3___<span class="dv">6</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_primary_goal_4_sum =</span> 
+           <span class="kw">sum</span>(lfdss_primary_goal_4___<span class="dv">1</span>,
+               lfdss_primary_goal_4___<span class="dv">2</span>, 
+               lfdss_primary_goal_4___<span class="dv">3</span>,
+               lfdss_primary_goal_4___<span class="dv">4</span>,
+               lfdss_primary_goal_4___<span class="dv">5</span>,
+               lfdss_primary_goal_4___<span class="dv">6</span>,
+               lfdss_primary_goal_4___<span class="dv">7</span>,
+               lfdss_primary_goal_4___<span class="dv">8</span>, 
+               lfdss_primary_goal_4___<span class="dv">9</span>,
+               lfdss_primary_goal_4___<span class="dv">10</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_impact_5_sum =</span> 
+           <span class="kw">sum</span>(lfdss_impact_5___<span class="dv">0</span>,
+               lfdss_impact_5___<span class="dv">1</span>,
+               lfdss_impact_5___<span class="dv">2</span>,
+               lfdss_impact_5___<span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_risk_6_sum =</span>
+           <span class="kw">sum</span>(lfdss_risk_6___<span class="dv">0</span>,
+               lfdss_risk_6___<span class="dv">1</span>,
+               lfdss_risk_6___<span class="dv">2</span>,
+               lfdss_risk_6___<span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_neg_affected_7_sum =</span> 
+           <span class="kw">sum</span>(lfdss_neg_affected_7___<span class="dv">0</span>,
+               lfdss_neg_affected_7___<span class="dv">1</span>,
+               lfdss_neg_affected_7___<span class="dv">2</span>,
+               lfdss_neg_affected_7___<span class="dv">3</span>, 
+               lfdss_neg_affected_7___<span class="dv">4</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_who_benefits_8_sum =</span> 
+           <span class="kw">sum</span>(lfdss_who_benefits_8___<span class="dv">1</span>,
+               lfdss_who_benefits_8___<span class="dv">2</span>,
+               lfdss_who_benefits_8___<span class="dv">3</span>, 
+               lfdss_who_benefits_8___<span class="dv">4</span>,
+               lfdss_who_benefits_8___<span class="dv">5</span>,
+               lfdss_who_benefits_8___<span class="dv">6</span>,
+               lfdss_who_benefits_8___<span class="dv">7</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_change_plans_9_sum =</span>
+           <span class="kw">sum</span>(lfdss_change_plans_9___<span class="dv">0</span>,
+               lfdss_change_plans_9___<span class="dv">1</span>,
+               lfdss_change_plans_9___<span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_talk_to_anyone_10_sum =</span>
+           <span class="kw">sum</span>(lfdss_talk_to_anyone_10___<span class="dv">0</span>,
+               lfdss_talk_to_anyone_10___<span class="dv">1</span>,
+               lfdss_talk_to_anyone_10___<span class="dv">2</span>,
+               lfdss_talk_to_anyone_10___<span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_1_sum =</span> 
+           <span class="kw">sum</span>(worker_1___<span class="dv">1</span>, 
+               worker_1___<span class="dv">2</span>, 
+               worker_1___<span class="dv">3</span>, 
+               worker_1___<span class="dv">4</span>,
+               worker_1___<span class="dv">5</span>,
+               worker_1___<span class="dv">6</span>,
+               worker_1___<span class="dv">7</span>,
+               worker_1___<span class="dv">8</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_2_sum =</span> 
+           <span class="kw">sum</span>(worker_2___<span class="dv">0</span>,
+               worker_2___<span class="dv">1</span>,
+               worker_2___<span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_3_sum =</span>
+           <span class="kw">sum</span>(worker_3___<span class="dv">1</span>,
+               worker_3___<span class="dv">2</span>,
+               worker_3___<span class="dv">3</span>,
+               worker_3___<span class="dv">4</span>,
+               worker_3___<span class="dv">5</span>,
+               worker_3___<span class="dv">6</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_4_sum =</span>
+           <span class="kw">sum</span>(worker_4___<span class="dv">1</span>,
+               worker_4___<span class="dv">2</span>,
+               worker_4___<span class="dv">3</span>,
+               worker_4___<span class="dv">4</span>,
+               worker_4___<span class="dv">5</span>,
+               worker_4___<span class="dv">6</span>,
+               worker_4___<span class="dv">7</span>,
+               worker_4___<span class="dv">8</span>,
+               worker_4___<span class="dv">9</span>,
+               worker_4___<span class="dv">10</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_5_sum =</span>
+           <span class="kw">sum</span>(worker_5___<span class="dv">1</span>,
+               worker_5___<span class="dv">2</span>,
+               worker_5___<span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_6_sum =</span>
+           <span class="kw">sum</span>(worker_6___<span class="dv">0</span>,
+               worker_6___<span class="dv">1</span>,
+               worker_6___<span class="dv">2</span>,
+               worker_6___<span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_7_sum =</span>
+           <span class="kw">sum</span>(worker_7___<span class="dv">0</span>,
+               worker_7___<span class="dv">1</span>,
+               worker_7___<span class="dv">2</span>,
+               worker_7___<span class="dv">3</span>,
+               worker_7___<span class="dv">4</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_8_sum =</span>
+           <span class="kw">sum</span>(worker_8___<span class="dv">1</span>,
+               worker_8___<span class="dv">2</span>,
+               worker_8___<span class="dv">3</span>,
+               worker_8___<span class="dv">4</span>,
+               worker_8___<span class="dv">5</span>,
+               worker_8___<span class="dv">6</span>,
+               worker_8___<span class="dv">7</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_9_sum =</span>
+           <span class="kw">sum</span>(worker_9___<span class="dv">0</span>,
+               worker_9___<span class="dv">1</span>,
+               worker_9___<span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_10_sum =</span>
+           <span class="kw">sum</span>(worker_10___<span class="dv">0</span>,
+               worker_10___<span class="dv">1</span>,
+               worker_10___<span class="dv">2</span>,
+               worker_10___<span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter_at</span>(<span class="kw">vars</span>(<span class="kw">ends_with</span>(<span class="st">&quot;_sum&quot;</span>)), <span class="kw">all_vars</span>(. <span class="op">&lt;=</span><span class="st"> </span><span class="dv">1</span>))
+
+<span class="kw">nrow</span>(df_u3_cln_mut)</code></pre></div>
+<pre><code>## [1] 456</code></pre>
+<p>(Four records had multiple responses and so were filtered out.)</p>
+<p>Recode LFDSS items (importart are 2, 5, 6, 7, 8, 9, 10) by collapsing dummy variables. Unscored items (1, 3, 4) just get raw values; scored items are recoded to ordinal values. (See “LFDSS scoring for total risk score.pdf”.)</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># names(df_u3_cln_mut)</span>
+
+df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_financial_decision_1 =</span> <span class="kw">case_when</span>(
+    lfdss_financial_decision_1___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_financial_decision_1___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    lfdss_financial_decision_1___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    lfdss_financial_decision_1___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">4</span>,
+    lfdss_financial_decision_1___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">5</span>,
+    lfdss_financial_decision_1___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">6</span>,
+    lfdss_financial_decision_1___<span class="dv">7</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">7</span>,
+    lfdss_financial_decision_1___<span class="dv">8</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">8</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_whose_idea_2_ord =</span> <span class="kw">case_when</span>(
+    lfdss_whose_idea_2___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_whose_idea_2___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_whose_idea_2___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_purpose_3 =</span> <span class="kw">case_when</span>(
+    lfdss_purpose_3___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_purpose_3___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>, 
+    lfdss_purpose_3___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    lfdss_purpose_3___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">4</span>,
+    lfdss_purpose_3___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">5</span>,
+    lfdss_purpose_3___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">6</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_primary_goal_4 =</span> <span class="kw">case_when</span>(
+    lfdss_primary_goal_4___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_primary_goal_4___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>, 
+    lfdss_primary_goal_4___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    lfdss_primary_goal_4___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">4</span>,
+    lfdss_primary_goal_4___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">5</span>,
+    lfdss_primary_goal_4___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">6</span>,
+    lfdss_primary_goal_4___<span class="dv">7</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">7</span>,
+    lfdss_primary_goal_4___<span class="dv">8</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">8</span>,
+    lfdss_primary_goal_4___<span class="dv">9</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">9</span>,
+    lfdss_primary_goal_4___<span class="dv">10</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">10</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_impact_5_ord =</span> <span class="kw">case_when</span>(
+    lfdss_impact_5___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_impact_5___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_impact_5___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    lfdss_impact_5___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_risk_6_ord =</span> <span class="kw">case_when</span>(
+    lfdss_risk_6___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_risk_6___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_risk_6___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    lfdss_risk_6___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_neg_affected_7_ord =</span> <span class="kw">case_when</span>(
+    lfdss_neg_affected_7___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_neg_affected_7___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_neg_affected_7___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_neg_affected_7___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, 
+    lfdss_neg_affected_7___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_who_benefits_8_ord =</span> <span class="kw">case_when</span>(
+    lfdss_who_benefits_8___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_who_benefits_8___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_who_benefits_8___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_who_benefits_8___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_who_benefits_8___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_who_benefits_8___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_who_benefits_8___<span class="dv">7</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_change_plans_9_ord =</span> <span class="kw">case_when</span>(
+    lfdss_change_plans_9___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_change_plans_9___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_change_plans_9___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_talk_to_anyone_10_ord =</span> <span class="kw">case_when</span>(
+    lfdss_talk_to_anyone_10___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_talk_to_anyone_10___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_talk_to_anyone_10___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    lfdss_talk_to_anyone_10___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_1 =</span> <span class="kw">case_when</span>(
+    worker_1___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, 
+    worker_1___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    worker_1___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    worker_1___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">4</span>,
+    worker_1___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">5</span>,
+    worker_1___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">6</span>,
+    worker_1___<span class="dv">7</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">7</span>,
+    worker_1___<span class="dv">8</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">8</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_2_ord =</span> <span class="kw">case_when</span>(
+    worker_2___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_2___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_2___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_3 =</span> <span class="kw">case_when</span>(
+    worker_3___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_3___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    worker_3___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    worker_3___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">4</span>,
+    worker_3___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">5</span>,
+    worker_3___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">6</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_4 =</span> <span class="kw">case_when</span>(
+    worker_4___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_4___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    worker_4___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    worker_4___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">4</span>,
+    worker_4___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">5</span>,
+    worker_4___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">6</span>,
+    worker_4___<span class="dv">7</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">7</span>,
+    worker_4___<span class="dv">8</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">8</span>,
+    worker_4___<span class="dv">9</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">9</span>,
+    worker_4___<span class="dv">10</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">10</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_5_ord =</span> <span class="kw">case_when</span>(
+    worker_5___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_5___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_5___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_6_ord =</span> <span class="kw">case_when</span>(
+    worker_6___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_6___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_6___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    worker_6___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_7_ord =</span> <span class="kw">case_when</span>(
+    worker_7___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_7___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_7___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_7___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_7___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_8_ord =</span> <span class="kw">case_when</span>(
+    worker_8___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_8___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_8___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_8___<span class="dv">4</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_8___<span class="dv">5</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_8___<span class="dv">6</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_8___<span class="dv">7</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_9_ord =</span> <span class="kw">case_when</span>(
+    worker_9___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_9___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    worker_9___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">worker_10_ord =</span> <span class="kw">case_when</span>(
+    worker_10___<span class="dv">0</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_10___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_10___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>,
+    worker_10___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>))</code></pre></div>
+<p>Collapse <code>lfdss_dec_abil_score</code> dummy variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># names(df_u3_cln_mut)[</span>
+<span class="co">#   str_detect(names(df_u3_cln_mut), pattern = &quot;lfdss_dec_abil_score&quot;)</span>
+<span class="co">#   ]</span>
+
+df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_dec_abil_score =</span> <span class="kw">case_when</span>(
+    lfdss_dec_abil_score___<span class="dv">1</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    lfdss_dec_abil_score___<span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    lfdss_dec_abil_score___<span class="dv">3</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_real_</span>
+  ))</code></pre></div>
+<p>Check for discrepances between “client” and “worker” items.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_2_agree =</span> <span class="kw">case_when</span>(
+    lfdss_whose_idea_2_ord <span class="op">==</span><span class="st"> </span>worker_2_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_whose_idea_2_ord <span class="op">!=</span><span class="st"> </span>worker_2_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_5_agree =</span> <span class="kw">case_when</span>(
+    lfdss_impact_5_ord <span class="op">==</span><span class="st"> </span>worker_5_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_impact_5_ord <span class="op">!=</span><span class="st"> </span>worker_5_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_6_agree =</span> <span class="kw">case_when</span>(
+    lfdss_risk_6_ord <span class="op">==</span><span class="st"> </span>worker_6_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_risk_6_ord <span class="op">!=</span><span class="st"> </span>worker_6_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_7_agree =</span> <span class="kw">case_when</span>(
+    lfdss_neg_affected_7_ord <span class="op">==</span><span class="st"> </span>worker_7_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_neg_affected_7_ord <span class="op">!=</span><span class="st"> </span>worker_7_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_8_agree =</span> <span class="kw">case_when</span>(
+    lfdss_who_benefits_8_ord <span class="op">==</span><span class="st"> </span>worker_8_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_who_benefits_8_ord <span class="op">!=</span><span class="st"> </span>worker_8_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_9_agree =</span> <span class="kw">case_when</span>(
+    lfdss_change_plans_9_ord <span class="op">==</span><span class="st"> </span>worker_9_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_change_plans_9_ord <span class="op">!=</span><span class="st"> </span>worker_9_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_10_agree =</span> <span class="kw">case_when</span>(
+    lfdss_talk_to_anyone_10_ord <span class="op">==</span><span class="st"> </span>worker_10_ord <span class="op">~</span><span class="st"> </span>1L,
+    lfdss_talk_to_anyone_10_ord <span class="op">!=</span><span class="st"> </span>worker_10_ord <span class="op">~</span><span class="st"> </span>0L,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="ot">NA_integer_</span>
+  ))</code></pre></div>
+<p>Resolve “client”-“worker” discrepances. If there’s a discrepancy between the client and worker ordinal scores, the get raised to the “don’t know” category with a maximum ordinal score.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_whose_idea_2_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_2_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_whose_idea_2_ord
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_impact_5_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_5_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_impact_5_ord
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_risk_6_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_6_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">3</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_risk_6_ord
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_neg_affected_7_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_7_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_neg_affected_7_ord
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_who_benefits_8_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_8_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_who_benefits_8_ord
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_change_plans_9_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_9_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">2</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_change_plans_9_ord
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_talk_to_anyone_10_ord_res =</span> <span class="kw">case_when</span>(
+    lfdss_10_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+    <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_talk_to_anyone_10_ord
+  ))</code></pre></div>
+<p>Get rid of the countless dummy variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># df_u3_cln_mut &lt;- df_u3_cln_mut %&gt;% </span>
+<span class="co">#   select(-matches(match = &quot;___\\d{1,2}$&quot;))</span></code></pre></div>
 </div>
 <div id="mindset-registry-3" class="section level4">
 <h4>MiNDSet Registry</h4>
@@ -580,12 +960,11 @@ df_ms_cln_mut &lt;-<span class="st"> </span>df_ms_cln_mut <span class="op">%&gt;
 <span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>redcap_event_name)</code></pre></div>
 <p>Perform left outer join.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_ms &lt;-
-<span class="st">  </span>FuzzyDateJoin<span class="op">::</span><span class="kw">outer_left</span>(<span class="dt">x =</span> df_u3_cln_mut_flt,
-                            <span class="dt">y =</span> df_ms_cln_mut,
-                            <span class="dt">x_id_col =</span> <span class="st">&quot;ptid&quot;</span>, <span class="dt">y_id_col =</span> <span class="st">&quot;subject_id&quot;</span>,
+<span class="st">  </span>FuzzyDateJoin<span class="op">::</span><span class="kw">outer_left</span>(<span class="dt">x =</span> df_u3_cln_mut_flt,    <span class="dt">y =</span> df_ms_cln_mut,
+                            <span class="dt">x_id_col =</span> <span class="st">&quot;ptid&quot;</span>,        <span class="dt">y_id_col =</span> <span class="st">&quot;subject_id&quot;</span>,
                             <span class="dt">x_date_col =</span> <span class="st">&quot;form_date&quot;</span>, <span class="dt">y_date_col =</span> <span class="st">&quot;exam_date&quot;</span>,
                             <span class="dt">x_intvl_less =</span> 120L, <span class="dt">x_intvl_more =</span> 120L,
-                            <span class="dt">keep_y_id =</span> <span class="ot">TRUE</span>)</code></pre></div>
+                            <span class="dt">keep_y_id =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <p>Reorder fields.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># names(df_u3_ms)</span>
 df_u3_ms &lt;-<span class="st"> </span>df_u3_ms <span class="op">%&gt;%</span>

@@ -101,8 +101,10 @@ fields_u3 <- fields_u3_raw %>% paste(collapse = ",")
 
 forms_u3_raw <- 
   c(
+    # Lichtenberg Financial Decision Making Self Efficacy Form
+    "financial_decision_making_self_efficacy_form"
     # Lichtenberg Financial Decision Making Screening Scale
-    "lfdss_for_professionals"
+    , "lfdss_for_professionals"
   )
 
 forms_u3 <- forms_u3_raw %>% paste(collapse = ",")
@@ -234,6 +236,402 @@ df_u3_cln_mut <- calculate_visit_num(df_u3_cln_mut,
                                      date_field = form_date)
 ```
 
+Find LFDSS items with multiple responses; then filter out.
+```{r}
+# names(df_u3_cln_mut)[
+#   str_detect(string = names(df_u3_cln_mut), pattern = "lfdss_")
+#   ]
+# names(df_u3_cln_mut)[
+#   str_detect(string = names(df_u3_cln_mut), pattern = "worker_")
+#   ]
+
+nrow(df_u3_cln_mut)
+
+df_u3_cln_mut <- df_u3_cln_mut %>% 
+  rowwise() %>% 
+  mutate(lfdss_financial_decision_1_sum = 
+           sum(lfdss_financial_decision_1___1,
+               lfdss_financial_decision_1___2,
+               lfdss_financial_decision_1___3,
+               lfdss_financial_decision_1___4,
+               lfdss_financial_decision_1___5,
+               lfdss_financial_decision_1___6,
+               lfdss_financial_decision_1___7,
+               lfdss_financial_decision_1___8)) %>% 
+  mutate(lfdss_whose_idea_2_sum = 
+           sum(lfdss_whose_idea_2___0,
+               lfdss_whose_idea_2___1,
+               lfdss_whose_idea_2___2)) %>% 
+  mutate(lfdss_purpose_3_sum = 
+           sum(lfdss_purpose_3___1,
+               lfdss_purpose_3___2, 
+               lfdss_purpose_3___3,
+               lfdss_purpose_3___4,
+               lfdss_purpose_3___5,
+               lfdss_purpose_3___6)) %>% 
+  mutate(lfdss_primary_goal_4_sum = 
+           sum(lfdss_primary_goal_4___1,
+               lfdss_primary_goal_4___2, 
+               lfdss_primary_goal_4___3,
+               lfdss_primary_goal_4___4,
+               lfdss_primary_goal_4___5,
+               lfdss_primary_goal_4___6,
+               lfdss_primary_goal_4___7,
+               lfdss_primary_goal_4___8, 
+               lfdss_primary_goal_4___9,
+               lfdss_primary_goal_4___10)) %>% 
+  mutate(lfdss_impact_5_sum = 
+           sum(lfdss_impact_5___0,
+               lfdss_impact_5___1,
+               lfdss_impact_5___2,
+               lfdss_impact_5___3)) %>% 
+  mutate(lfdss_risk_6_sum =
+           sum(lfdss_risk_6___0,
+               lfdss_risk_6___1,
+               lfdss_risk_6___2,
+               lfdss_risk_6___3)) %>% 
+  mutate(lfdss_neg_affected_7_sum = 
+           sum(lfdss_neg_affected_7___0,
+               lfdss_neg_affected_7___1,
+               lfdss_neg_affected_7___2,
+               lfdss_neg_affected_7___3, 
+               lfdss_neg_affected_7___4)) %>% 
+  mutate(lfdss_who_benefits_8_sum = 
+           sum(lfdss_who_benefits_8___1,
+               lfdss_who_benefits_8___2,
+               lfdss_who_benefits_8___3, 
+               lfdss_who_benefits_8___4,
+               lfdss_who_benefits_8___5,
+               lfdss_who_benefits_8___6,
+               lfdss_who_benefits_8___7)) %>% 
+  mutate(lfdss_change_plans_9_sum =
+           sum(lfdss_change_plans_9___0,
+               lfdss_change_plans_9___1,
+               lfdss_change_plans_9___2)) %>% 
+  mutate(lfdss_talk_to_anyone_10_sum =
+           sum(lfdss_talk_to_anyone_10___0,
+               lfdss_talk_to_anyone_10___1,
+               lfdss_talk_to_anyone_10___2,
+               lfdss_talk_to_anyone_10___3)) %>% 
+  mutate(worker_1_sum = 
+           sum(worker_1___1, 
+               worker_1___2, 
+               worker_1___3, 
+               worker_1___4,
+               worker_1___5,
+               worker_1___6,
+               worker_1___7,
+               worker_1___8)) %>% 
+  mutate(worker_2_sum = 
+           sum(worker_2___0,
+               worker_2___1,
+               worker_2___2)) %>% 
+  mutate(worker_3_sum =
+           sum(worker_3___1,
+               worker_3___2,
+               worker_3___3,
+               worker_3___4,
+               worker_3___5,
+               worker_3___6)) %>% 
+  mutate(worker_4_sum =
+           sum(worker_4___1,
+               worker_4___2,
+               worker_4___3,
+               worker_4___4,
+               worker_4___5,
+               worker_4___6,
+               worker_4___7,
+               worker_4___8,
+               worker_4___9,
+               worker_4___10)) %>% 
+  mutate(worker_5_sum =
+           sum(worker_5___1,
+               worker_5___2,
+               worker_5___3)) %>% 
+  mutate(worker_6_sum =
+           sum(worker_6___0,
+               worker_6___1,
+               worker_6___2,
+               worker_6___3)) %>% 
+  mutate(worker_7_sum =
+           sum(worker_7___0,
+               worker_7___1,
+               worker_7___2,
+               worker_7___3,
+               worker_7___4)) %>% 
+  mutate(worker_8_sum =
+           sum(worker_8___1,
+               worker_8___2,
+               worker_8___3,
+               worker_8___4,
+               worker_8___5,
+               worker_8___6,
+               worker_8___7)) %>% 
+  mutate(worker_9_sum =
+           sum(worker_9___0,
+               worker_9___1,
+               worker_9___2)) %>% 
+  mutate(worker_10_sum =
+           sum(worker_10___0,
+               worker_10___1,
+               worker_10___2,
+               worker_10___3)) %>% 
+  ungroup() %>%
+  filter_at(vars(ends_with("_sum")), all_vars(. <= 1))
+
+nrow(df_u3_cln_mut)
+```
+
+(Four records had multiple responses and so were filtered out.)
+
+Recode LFDSS items (importart are 2, 5, 6, 7, 8, 9, 10) by collapsing dummy variables. Unscored items (1, 3, 4) just get raw values; scored items are recoded to ordinal values. (See "LFDSS scoring for total risk score.pdf".)
+```{r}
+# names(df_u3_cln_mut)
+
+df_u3_cln_mut <- df_u3_cln_mut %>% 
+  mutate(lfdss_financial_decision_1 = case_when(
+    lfdss_financial_decision_1___1 == 1 ~ 1,
+    lfdss_financial_decision_1___2 == 1 ~ 2,
+    lfdss_financial_decision_1___3 == 1 ~ 3,
+    lfdss_financial_decision_1___4 == 1 ~ 4,
+    lfdss_financial_decision_1___5 == 1 ~ 5,
+    lfdss_financial_decision_1___6 == 1 ~ 6,
+    lfdss_financial_decision_1___7 == 1 ~ 7,
+    lfdss_financial_decision_1___8 == 1 ~ 8,
+    TRUE ~ NA_real_
+  )) %>% 
+  mutate(lfdss_whose_idea_2_ord = case_when(
+    lfdss_whose_idea_2___0 == 1 ~ 0,
+    lfdss_whose_idea_2___1 == 1 ~ 1,
+    lfdss_whose_idea_2___2 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_purpose_3 = case_when(
+    lfdss_purpose_3___1 == 1 ~ 1,
+    lfdss_purpose_3___2 == 1 ~ 2, 
+    lfdss_purpose_3___3 == 1 ~ 3,
+    lfdss_purpose_3___4 == 1 ~ 4,
+    lfdss_purpose_3___5 == 1 ~ 5,
+    lfdss_purpose_3___6 == 1 ~ 6,
+    TRUE ~ NA_real_)) %>%
+  mutate(lfdss_primary_goal_4 = case_when(
+    lfdss_primary_goal_4___1 == 1 ~ 1,
+    lfdss_primary_goal_4___2 == 1 ~ 2, 
+    lfdss_primary_goal_4___3 == 1 ~ 3,
+    lfdss_primary_goal_4___4 == 1 ~ 4,
+    lfdss_primary_goal_4___5 == 1 ~ 5,
+    lfdss_primary_goal_4___6 == 1 ~ 6,
+    lfdss_primary_goal_4___7 == 1 ~ 7,
+    lfdss_primary_goal_4___8 == 1 ~ 8,
+    lfdss_primary_goal_4___9 == 1 ~ 9,
+    lfdss_primary_goal_4___10 == 1 ~ 10,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_impact_5_ord = case_when(
+    lfdss_impact_5___0 == 1 ~ 0,
+    lfdss_impact_5___1 == 1 ~ 1,
+    lfdss_impact_5___2 == 1 ~ 2,
+    lfdss_impact_5___3 == 1 ~ 3,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_risk_6_ord = case_when(
+    lfdss_risk_6___0 == 1 ~ 0,
+    lfdss_risk_6___1 == 1 ~ 1,
+    lfdss_risk_6___2 == 1 ~ 2,
+    lfdss_risk_6___3 == 1 ~ 3,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_neg_affected_7_ord = case_when(
+    lfdss_neg_affected_7___0 == 1 ~ 0,
+    lfdss_neg_affected_7___1 == 1 ~ 1,
+    lfdss_neg_affected_7___2 == 1 ~ 1,
+    lfdss_neg_affected_7___3 == 1 ~ 1, 
+    lfdss_neg_affected_7___4 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_who_benefits_8_ord = case_when(
+    lfdss_who_benefits_8___1 == 1 ~ 0,
+    lfdss_who_benefits_8___2 == 1 ~ 1,
+    lfdss_who_benefits_8___3 == 1 ~ 1,
+    lfdss_who_benefits_8___4 == 1 ~ 1,
+    lfdss_who_benefits_8___5 == 1 ~ 1,
+    lfdss_who_benefits_8___6 == 1 ~ 1,
+    lfdss_who_benefits_8___7 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_change_plans_9_ord = case_when(
+    lfdss_change_plans_9___0 == 1 ~ 0,
+    lfdss_change_plans_9___1 == 1 ~ 1,
+    lfdss_change_plans_9___2 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(lfdss_talk_to_anyone_10_ord = case_when(
+    lfdss_talk_to_anyone_10___0 == 1 ~ 0,
+    lfdss_talk_to_anyone_10___1 == 1 ~ 0,
+    lfdss_talk_to_anyone_10___2 == 1 ~ 0,
+    lfdss_talk_to_anyone_10___3 == 1 ~ 1,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_1 = case_when(
+    worker_1___1 == 1 ~ 1, 
+    worker_1___2 == 1 ~ 2,
+    worker_1___3 == 1 ~ 3,
+    worker_1___4 == 1 ~ 4,
+    worker_1___5 == 1 ~ 5,
+    worker_1___6 == 1 ~ 6,
+    worker_1___7 == 1 ~ 7,
+    worker_1___8 == 1 ~ 8,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_2_ord = case_when(
+    worker_2___0 == 1 ~ 0,
+    worker_2___1 == 1 ~ 1,
+    worker_2___2 == 1 ~ 2)) %>% 
+  mutate(worker_3 = case_when(
+    worker_3___1 == 1 ~ 1,
+    worker_3___2 == 1 ~ 2,
+    worker_3___3 == 1 ~ 3,
+    worker_3___4 == 1 ~ 4,
+    worker_3___5 == 1 ~ 5,
+    worker_3___6 == 1 ~ 6,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_4 = case_when(
+    worker_4___1 == 1 ~ 1,
+    worker_4___2 == 1 ~ 2,
+    worker_4___3 == 1 ~ 3,
+    worker_4___4 == 1 ~ 4,
+    worker_4___5 == 1 ~ 5,
+    worker_4___6 == 1 ~ 6,
+    worker_4___7 == 1 ~ 7,
+    worker_4___8 == 1 ~ 8,
+    worker_4___9 == 1 ~ 9,
+    worker_4___10 == 1 ~ 10,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_5_ord = case_when(
+    worker_5___1 == 1 ~ 0,
+    worker_5___2 == 1 ~ 1,
+    worker_5___3 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_6_ord = case_when(
+    worker_6___0 == 1 ~ 0,
+    worker_6___1 == 1 ~ 1,
+    worker_6___2 == 1 ~ 2,
+    worker_6___3 == 1 ~ 3,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_7_ord = case_when(
+    worker_7___0 == 1 ~ 0,
+    worker_7___1 == 1 ~ 1,
+    worker_7___2 == 1 ~ 1,
+    worker_7___3 == 1 ~ 1,
+    worker_7___4 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_8_ord = case_when(
+    worker_8___1 == 1 ~ 0,
+    worker_8___2 == 1 ~ 1,
+    worker_8___3 == 1 ~ 1,
+    worker_8___4 == 1 ~ 1,
+    worker_8___5 == 1 ~ 1,
+    worker_8___6 == 1 ~ 1,
+    worker_8___7 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_9_ord = case_when(
+    worker_9___0 == 1 ~ 0,
+    worker_9___1 == 1 ~ 1,
+    worker_9___2 == 1 ~ 2,
+    TRUE ~ NA_real_)) %>% 
+  mutate(worker_10_ord = case_when(
+    worker_10___0 == 1 ~ 0,
+    worker_10___1 == 1 ~ 0,
+    worker_10___2 == 1 ~ 0,
+    worker_10___3 == 1 ~ 1,
+    TRUE ~ NA_real_))
+```
+
+Collapse `lfdss_dec_abil_score` dummy variables.
+```{r}
+# names(df_u3_cln_mut)[
+#   str_detect(names(df_u3_cln_mut), pattern = "lfdss_dec_abil_score")
+#   ]
+
+df_u3_cln_mut <- df_u3_cln_mut %>% 
+  mutate(lfdss_dec_abil_score = case_when(
+    lfdss_dec_abil_score___1 == 1 ~ 1,
+    lfdss_dec_abil_score___2 == 1 ~ 2,
+    lfdss_dec_abil_score___3 == 1 ~ 3,
+    TRUE ~ NA_real_
+  ))
+```
+
+Check for discrepances between "client" and "worker" items.
+```{r}
+df_u3_cln_mut <- df_u3_cln_mut %>%
+  mutate(lfdss_2_agree = case_when(
+    lfdss_whose_idea_2_ord == worker_2_ord ~ 1L,
+    lfdss_whose_idea_2_ord != worker_2_ord ~ 0L,
+    TRUE ~ NA_integer_
+  )) %>% 
+  mutate(lfdss_5_agree = case_when(
+    lfdss_impact_5_ord == worker_5_ord ~ 1L,
+    lfdss_impact_5_ord != worker_5_ord ~ 0L,
+    TRUE ~ NA_integer_
+  )) %>% 
+  mutate(lfdss_6_agree = case_when(
+    lfdss_risk_6_ord == worker_6_ord ~ 1L,
+    lfdss_risk_6_ord != worker_6_ord ~ 0L,
+    TRUE ~ NA_integer_
+  )) %>% 
+  mutate(lfdss_7_agree = case_when(
+    lfdss_neg_affected_7_ord == worker_7_ord ~ 1L,
+    lfdss_neg_affected_7_ord != worker_7_ord ~ 0L,
+    TRUE ~ NA_integer_
+  )) %>% 
+  mutate(lfdss_8_agree = case_when(
+    lfdss_who_benefits_8_ord == worker_8_ord ~ 1L,
+    lfdss_who_benefits_8_ord != worker_8_ord ~ 0L,
+    TRUE ~ NA_integer_
+  )) %>% 
+  mutate(lfdss_9_agree = case_when(
+    lfdss_change_plans_9_ord == worker_9_ord ~ 1L,
+    lfdss_change_plans_9_ord != worker_9_ord ~ 0L,
+    TRUE ~ NA_integer_
+  )) %>% 
+  mutate(lfdss_10_agree = case_when(
+    lfdss_talk_to_anyone_10_ord == worker_10_ord ~ 1L,
+    lfdss_talk_to_anyone_10_ord != worker_10_ord ~ 0L,
+    TRUE ~ NA_integer_
+  ))
+```
+
+Resolve "client"-"worker" discrepances. If there's a discrepancy between the client and worker ordinal scores, the get raised to the "don't know" category with a maximum ordinal score.
+```{r}
+df_u3_cln_mut <- df_u3_cln_mut %>%
+  mutate(lfdss_whose_idea_2_ord_res = case_when(
+    lfdss_2_agree == 0 ~ 2,
+    TRUE ~ lfdss_whose_idea_2_ord
+  )) %>% 
+  mutate(lfdss_impact_5_ord_res = case_when(
+    lfdss_5_agree == 0 ~ 3,
+    TRUE ~ lfdss_impact_5_ord
+  )) %>% 
+  mutate(lfdss_risk_6_ord_res = case_when(
+    lfdss_6_agree == 0 ~ 3,
+    TRUE ~ lfdss_risk_6_ord
+  )) %>% 
+  mutate(lfdss_neg_affected_7_ord_res = case_when(
+    lfdss_7_agree == 0 ~ 2,
+    TRUE ~ lfdss_neg_affected_7_ord
+  )) %>% 
+  mutate(lfdss_who_benefits_8_ord_res = case_when(
+    lfdss_8_agree == 0 ~ 2,
+    TRUE ~ lfdss_who_benefits_8_ord
+  )) %>% 
+  mutate(lfdss_change_plans_9_ord_res = case_when(
+    lfdss_9_agree == 0 ~ 2,
+    TRUE ~ lfdss_change_plans_9_ord
+  )) %>% 
+  mutate(lfdss_talk_to_anyone_10_ord_res = case_when(
+    lfdss_10_agree == 0 ~ 1,
+    TRUE ~ lfdss_talk_to_anyone_10_ord
+  ))
+```
+
+Get rid of the countless dummy variables.
+```{r}
+# df_u3_cln_mut <- df_u3_cln_mut %>% 
+#   select(-matches(match = "___\\d{1,2}$"))
+```
+
 #### MiNDSet Registry
 
 Coerce data types.
@@ -255,7 +653,6 @@ df_ms_cln_mut <- calculate_age(df_ms_cln_mut,
                                birth_date = birth_date,
                                age_date = exam_date)
 ```
-
 
 ### Filter data
 
@@ -285,12 +682,11 @@ df_ms_cln_mut <- df_ms_cln_mut %>%
 Perform left outer join.
 ```{r}
 df_u3_ms <-
-  FuzzyDateJoin::outer_left(x = df_u3_cln_mut_flt,
-                            y = df_ms_cln_mut,
-                            x_id_col = "ptid", y_id_col = "subject_id",
+  FuzzyDateJoin::outer_left(x = df_u3_cln_mut_flt,    y = df_ms_cln_mut,
+                            x_id_col = "ptid",        y_id_col = "subject_id",
                             x_date_col = "form_date", y_date_col = "exam_date",
                             x_intvl_less = 120L, x_intvl_more = 120L,
-                            keep_y_id = TRUE)
+                            keep_y_id = FALSE)
 ```
 
 Reorder fields.
