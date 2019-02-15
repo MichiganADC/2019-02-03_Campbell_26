@@ -345,7 +345,8 @@ df_u3_cln_mut <- df_u3_cln_mut %>%
                worker_4___9,
                worker_4___10)) %>% 
   mutate(worker_5_sum =
-           sum(worker_5___1,
+           sum(worker_5___0,
+               worker_5___1,
                worker_5___2,
                worker_5___3)) %>% 
   mutate(worker_6_sum =
@@ -499,9 +500,10 @@ df_u3_cln_mut <- df_u3_cln_mut %>%
     worker_4___10 == 1 ~ 10,
     TRUE ~ NA_real_)) %>% 
   mutate(worker_5_ord = case_when(
-    worker_5___1 == 1 ~ 0,
-    worker_5___2 == 1 ~ 1,
-    worker_5___3 == 1 ~ 2,
+    worker_5___0 == 1 ~ 0,
+    worker_5___1 == 1 ~ 1,
+    worker_5___2 == 1 ~ 2,
+    worker_5___3 == 1 ~ 3,
     TRUE ~ NA_real_)) %>% 
   mutate(worker_6_ord = case_when(
     worker_6___0 == 1 ~ 0,
