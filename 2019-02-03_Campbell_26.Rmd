@@ -768,6 +768,17 @@ readr::write_csv(df_data_dict_ms_flt, "DataDictionary_MiNDSet.csv", na = "")
 ```
 
 
+## Find Records Missing LFDSS Worker Data
+
+```{r}
+df_u3_ms %>% 
+  select(ptid, form_date, worker_2_ord) %>% 
+  filter(form_date >= as.Date("2018-03-01")) %>% 
+  filter(is.na(worker_2_ord)) %>%
+  select(-worker_2_ord) %>% 
+  arrange(ptid, form_date) %>% 
+  readr::write_csv("missing_lfdss_worker_data.csv", na = "")
+```
 
 
 
