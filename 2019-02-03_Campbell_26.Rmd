@@ -245,7 +245,7 @@ Find LFDSS items with multiple responses; then filter out.
 #   str_detect(string = names(df_u3_cln_mut), pattern = "worker_")
 #   ]
 
-nrow(df_u3_cln_mut)
+prefilter <- nrow(df_u3_cln_mut)
 
 df_u3_cln_mut <- df_u3_cln_mut %>% 
   rowwise() %>% 
@@ -380,10 +380,10 @@ df_u3_cln_mut <- df_u3_cln_mut %>%
   ungroup() %>%
   filter_at(vars(ends_with("_sum")), all_vars(. <= 1))
 
-nrow(df_u3_cln_mut)
+postfilter <- nrow(df_u3_cln_mut)
 ```
 
-(Four records had multiple responses and so were filtered out.)
+(`r prefilter - postfilter` records had multiple responses and so were filtered out.)
 
 Recode LFDSS items (importart are 2, 5, 6, 7, 8, 9, 10) by collapsing dummy variables. Unscored items (1, 3, 4) just get raw values; scored items are recoded to ordinal values. (See "LFDSS scoring for total risk score.pdf".)
 ```{r}

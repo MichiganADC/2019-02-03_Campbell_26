@@ -546,9 +546,9 @@ df_u3_cln_mut_cls_lis &lt;-<span class="st"> </span>purrr<span class="op">::</sp
 <span class="co">#   str_detect(string = names(df_u3_cln_mut), pattern = &quot;worker_&quot;)</span>
 <span class="co">#   ]</span>
 
-<span class="kw">nrow</span>(df_u3_cln_mut)</code></pre></div>
-<pre><code>## [1] 470</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span><span class="st"> </span>
+prefilter &lt;-<span class="st"> </span><span class="kw">nrow</span>(df_u3_cln_mut)
+
+df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">rowwise</span>() <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_financial_decision_1_sum =</span> 
            <span class="kw">sum</span>(lfdss_financial_decision_1___<span class="dv">1</span>,
@@ -681,9 +681,8 @@ df_u3_cln_mut_cls_lis &lt;-<span class="st"> </span>purrr<span class="op">::</sp
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter_at</span>(<span class="kw">vars</span>(<span class="kw">ends_with</span>(<span class="st">&quot;_sum&quot;</span>)), <span class="kw">all_vars</span>(. <span class="op">&lt;=</span><span class="st"> </span><span class="dv">1</span>))
 
-<span class="kw">nrow</span>(df_u3_cln_mut)</code></pre></div>
-<pre><code>## [1] 445</code></pre>
-<p>(Four records had multiple responses and so were filtered out.)</p>
+postfilter &lt;-<span class="st"> </span><span class="kw">nrow</span>(df_u3_cln_mut)</code></pre></div>
+<p>(25 records had multiple responses and so were filtered out.)</p>
 <p>Recode LFDSS items (importart are 2, 5, 6, 7, 8, 9, 10) by collapsing dummy variables. Unscored items (1, 3, 4) just get raw values; scored items are recoded to ordinal values. (See “LFDSS scoring for total risk score.pdf”.)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># names(df_u3_cln_mut)</span>
 
