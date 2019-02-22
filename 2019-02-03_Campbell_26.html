@@ -512,8 +512,8 @@ data.table<span class="op">::</span><span class="kw">fwrite</span>(df_ms, <span 
 <h3>Mutate data</h3>
 <div id="uds-3-3" class="section level4">
 <h4>UDS 3</h4>
-<p>Collapse initial visit / follow-up visit / telephone visit fields.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span><span class="kw">collapse_ift_cols</span>(df_u3_cln)</code></pre></div>
+<p>Coalesce initial visit / follow-up visit / telephone visit fields.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span><span class="kw">coalesce_ift_cols</span>(df_u3_cln)</code></pre></div>
 <p>Guess data types.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span><span class="kw">suppressMessages</span>( readr<span class="op">::</span><span class="kw">type_convert</span>(df_u3_cln_mut) )
 df_u3_cln_mut_cls_lis &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">map</span>(df_u3_cln_mut, class)</code></pre></div>
@@ -914,9 +914,27 @@ df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;
     lfdss_10_agree <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
     <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>lfdss_talk_to_anyone_10_ord
   ))</code></pre></div>
-<p>Get rid of the countless dummy variables.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># df_u3_cln_mut &lt;- df_u3_cln_mut %&gt;% </span>
-<span class="co">#   select(-matches(match = &quot;___\\d{1,2}$&quot;))</span></code></pre></div>
+<p>Add summation field for all client-worker resolved ordinal scores.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rowwise</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdss_ord_res_sum =</span> 
+           <span class="kw">sum</span>(lfdss_whose_idea_2_ord_res,
+               lfdss_impact_5_ord_res,
+               lfdss_risk_6_ord_res,
+               lfdss_neg_affected_7_ord_res,
+               lfdss_who_benefits_8_ord_res,
+               lfdss_change_plans_9_ord_res,
+               lfdss_talk_to_anyone_10_ord_res)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
+<p>Add summation field for <em>Lichtenberg Financial Decision Self Efficacy</em> fields.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut &lt;-<span class="st"> </span>df_u3_cln_mut <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">rowwise</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lfdrs_self_eff_sum =</span>
+           <span class="kw">sum</span>(lfdrs_sa_6_confident,
+               lfdrs_sa7_worry,
+               lfdrs_pv_21_anxious,
+               lfdrs_pv_24_downhearted)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
 </div>
 <div id="mindset-registry-3" class="section level4">
 <h4>MiNDSet Registry</h4>
@@ -945,7 +963,11 @@ df_ms_cln_mut &lt;-<span class="st"> </span>df_ms_cln <span class="op">%&gt;%</s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut_flt &lt;-<span class="st"> </span><span class="kw">get_visit_n</span>(df_u3_cln_mut,
                                  <span class="dt">id_field =</span> ptid,
                                  <span class="dt">date_field =</span> form_date,
-                                 <span class="dt">n =</span> <span class="op">-</span><span class="ot">Inf</span>) <span class="co"># -Inf =&gt; earliest visit</span></code></pre></div>
+                                 <span class="dt">n =</span> <span class="ot">Inf</span>) <span class="co"># -Inf =&gt; earliest visit</span>
+                                          <span class="co"># Inf  =&gt; most recent visit</span></code></pre></div>
+<p>Keep only records that have worker data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_cln_mut_flt &lt;-<span class="st"> </span>df_u3_cln_mut_flt <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(worker_2_ord))</code></pre></div>
 </div>
 </div>
 </div>
@@ -985,6 +1007,10 @@ df_u3_ms &lt;-<span class="st"> </span>df_u3_ms <span class="op">%&gt;%</span>
                 uds_dx_der, <span class="dt">uds_dx_date =</span> exam_date,
                 age_years, age_exact, age_units,
                 race_value, sex_value, ed_level, marital_status,
+                mocatots, trailb_c2, trailbrr_c2, trailbli_c2, trailb_c2z,
+                lfdrs_sa_6_confident, lfdrs_sa7_worry, 
+                lfdrs_pv_21_anxious, lfdrs_pv_24_downhearted,
+                lfdrs_self_eff_sum, 
                 <span class="kw">everything</span>())</code></pre></div>
 </div>
 </div>
@@ -1035,13 +1061,13 @@ readr<span class="op">::</span><span class="kw">write_csv</span>(df_data_dict_ms
 </div>
 <div id="find-records-missing-lfdss-worker-data" class="section level2">
 <h2>Find Records Missing LFDSS Worker Data</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_u3_ms <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(ptid, form_date, worker_2_ord) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(form_date <span class="op">&gt;=</span><span class="st"> </span><span class="kw">as.Date</span>(<span class="st">&quot;2018-03-01&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(worker_2_ord)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>worker_2_ord) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">arrange</span>(ptid, form_date) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span>readr<span class="op">::</span><span class="kw">write_csv</span>(<span class="st">&quot;missing_lfdss_worker_data.csv&quot;</span>, <span class="dt">na =</span> <span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># df_u3_ms %&gt;% </span>
+<span class="co">#   select(ptid, form_date, worker_2_ord) %&gt;% </span>
+<span class="co">#   filter(form_date &gt;= as.Date(&quot;2018-03-01&quot;)) %&gt;% </span>
+<span class="co">#   filter(is.na(worker_2_ord)) %&gt;%</span>
+<span class="co">#   select(-worker_2_ord) %&gt;% </span>
+<span class="co">#   arrange(ptid, form_date) %&gt;% </span>
+<span class="co">#   readr::write_csv(&quot;missing_lfdss_worker_data.csv&quot;, na = &quot;&quot;)</span></code></pre></div>
 </div>
 
 

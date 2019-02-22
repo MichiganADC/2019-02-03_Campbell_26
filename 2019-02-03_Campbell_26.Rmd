@@ -198,9 +198,9 @@ df_ms_cln <- df_ms_cln %>%
 
 #### UDS 3
 
-Collapse initial visit / follow-up visit / telephone visit fields.
+Coalesce initial visit / follow-up visit / telephone visit fields.
 ```{r}
-df_u3_cln_mut <- collapse_ift_cols(df_u3_cln)
+df_u3_cln_mut <- coalesce_ift_cols(df_u3_cln)
 ```
 
 Guess data types.
@@ -628,11 +628,33 @@ df_u3_cln_mut <- df_u3_cln_mut %>%
   ))
 ```
 
-Get rid of the countless dummy variables.
+Add summation field for all client-worker resolved ordinal scores.
 ```{r}
-# df_u3_cln_mut <- df_u3_cln_mut %>% 
-#   select(-matches(match = "___\\d{1,2}$"))
+df_u3_cln_mut <- df_u3_cln_mut %>% 
+  rowwise() %>% 
+  mutate(lfdss_ord_res_sum = 
+           sum(lfdss_whose_idea_2_ord_res,
+               lfdss_impact_5_ord_res,
+               lfdss_risk_6_ord_res,
+               lfdss_neg_affected_7_ord_res,
+               lfdss_who_benefits_8_ord_res,
+               lfdss_change_plans_9_ord_res,
+               lfdss_talk_to_anyone_10_ord_res)) %>% 
+  ungroup()
 ```
+
+Add summation field for _Lichtenberg Financial Decision Self Efficacy_ fields.
+```{r}
+df_u3_cln_mut <- df_u3_cln_mut %>%
+  rowwise() %>% 
+  mutate(lfdrs_self_eff_sum =
+           sum(lfdrs_sa_6_confident,
+               lfdrs_sa7_worry,
+               lfdrs_pv_21_anxious,
+               lfdrs_pv_24_downhearted)) %>% 
+  ungroup()
+```
+
 
 #### MiNDSet Registry
 
@@ -665,7 +687,14 @@ Get only most recent visits.
 df_u3_cln_mut_flt <- get_visit_n(df_u3_cln_mut,
                                  id_field = ptid,
                                  date_field = form_date,
-                                 n = -Inf) # -Inf => earliest visit
+                                 n = Inf) # -Inf => earliest visit
+                                          # Inf  => most recent visit
+```
+
+Keep only records that have worker data.
+```{r}
+df_u3_cln_mut_flt <- df_u3_cln_mut_flt %>% 
+  filter(!is.na(worker_2_ord))
 ```
 
 
@@ -712,6 +741,10 @@ df_u3_ms <- df_u3_ms %>%
                 uds_dx_der, uds_dx_date = exam_date,
                 age_years, age_exact, age_units,
                 race_value, sex_value, ed_level, marital_status,
+                mocatots, trailb_c2, trailbrr_c2, trailbli_c2, trailb_c2z,
+                lfdrs_sa_6_confident, lfdrs_sa7_worry, 
+                lfdrs_pv_21_anxious, lfdrs_pv_24_downhearted,
+                lfdrs_self_eff_sum, 
                 everything())
 ```
 
@@ -771,13 +804,13 @@ readr::write_csv(df_data_dict_ms_flt, "DataDictionary_MiNDSet.csv", na = "")
 ## Find Records Missing LFDSS Worker Data
 
 ```{r}
-df_u3_ms %>% 
-  select(ptid, form_date, worker_2_ord) %>% 
-  filter(form_date >= as.Date("2018-03-01")) %>% 
-  filter(is.na(worker_2_ord)) %>%
-  select(-worker_2_ord) %>% 
-  arrange(ptid, form_date) %>% 
-  readr::write_csv("missing_lfdss_worker_data.csv", na = "")
+# df_u3_ms %>% 
+#   select(ptid, form_date, worker_2_ord) %>% 
+#   filter(form_date >= as.Date("2018-03-01")) %>% 
+#   filter(is.na(worker_2_ord)) %>%
+#   select(-worker_2_ord) %>% 
+#   arrange(ptid, form_date) %>% 
+#   readr::write_csv("missing_lfdss_worker_data.csv", na = "")
 ```
 
 
