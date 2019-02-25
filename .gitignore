@@ -11,3 +11,8 @@
 *.txt
 *.eml
 *.pdf
+*config*
+*checkpoint*
+*.json
+*.sh
+2019-02-03_Campbell_26_jl*
