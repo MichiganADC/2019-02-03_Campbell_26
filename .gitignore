@@ -11,6 +11,7 @@
 *.txt
 *.eml
 *.pdf
+*__pycache__*
 *config*
 *checkpoint*
 *.json
